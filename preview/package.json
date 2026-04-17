@@ -1,0 +1,19 @@
+{
+  "name": "seobuilder3-preview",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Throwaway preview generator — 5 maximally different test sites for design evaluation. Not the main seobuilder3 codebase.",
+  "scripts": {
+    "generate": "tsx src/main.ts",
+    "generate:noimg": "SKIP_IMAGES=1 tsx src/main.ts"
+  },
+  "dependencies": {
+    "openai": "^4.68.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}
