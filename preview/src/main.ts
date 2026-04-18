@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync, existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { env } from './env.js';
 import { briefs } from './briefs.js';
@@ -46,26 +46,35 @@ async function buildOne(p: (typeof pairings)[number]): Promise<void> {
 
   process.stdout.write(`\n[${brief.id}] ${brief.brand_override} · ${persona.name} · ${theme.id}\n`);
 
-  // 1) Home identity + all home sections
-  process.stdout.write(`[${brief.id}] generating home content…\n`);
-  const home = await generateHomeContent(brief, persona);
+  // Cache: if content.json exists and looks complete, reuse it (render-only pass).
+  const cachePath = join(outDir, 'content.json');
+  let content: SiteContent;
+  if (existsSync(cachePath) && !process.env.FORCE_REGENERATE) {
+    try {
+      const cached = JSON.parse(readFileSync(cachePath, 'utf8')) as SiteContent;
+      if (cached.identity?.brand && cached.home?.hero && cached.pages?.features && cached.blog?.articles?.length) {
+        process.stdout.write(`[${brief.id}] using cached content.json (set FORCE_REGENERATE=1 to refresh)\n`);
+        content = cached;
+      } else {
+        throw new Error('cache incomplete');
+      }
+    } catch {
+      content = await generateFresh();
+    }
+  } else {
+    content = await generateFresh();
+  }
 
-  // 2) Secondary pages
-  process.stdout.write(`[${brief.id}] generating secondary pages…\n`);
-  const pages = await generateSecondaryPages(brief, persona, home.identity.brand);
-
-  // 3) Blog (3 articles)
-  process.stdout.write(`[${brief.id}] generating blog…\n`);
-  const blog = await generateBlog(brief, persona, home.identity.brand);
-  blog.articles = blog.articles.map(sanitizeArticle);
-
-  // Compose full content object.
-  const content: SiteContent = {
-    identity: home.identity,
-    home: home.home,
-    pages,
-    blog,
-  };
+  async function generateFresh(): Promise<SiteContent> {
+    process.stdout.write(`[${brief.id}] generating home content…\n`);
+    const home = await generateHomeContent(brief, persona);
+    process.stdout.write(`[${brief.id}] generating secondary pages…\n`);
+    const pages = await generateSecondaryPages(brief, persona, home.identity.brand);
+    process.stdout.write(`[${brief.id}] generating blog…\n`);
+    const blog = await generateBlog(brief, persona, home.identity.brand);
+    blog.articles = blog.articles.map(sanitizeArticle);
+    return { identity: home.identity, home: home.home, pages, blog };
+  }
 
   // 4) Hero image (for home).
   let heroImageUrl: string | undefined;
@@ -87,7 +96,7 @@ async function buildOne(p: (typeof pairings)[number]): Promise<void> {
     JSON.stringify(
       {
         brief: brief.id,
-        brand: home.identity.brand,
+        brand: content.identity.brand,
         niche: brief.niche,
         persona: persona.id,
         theme: theme.id,
@@ -129,7 +138,7 @@ async function buildOne(p: (typeof pairings)[number]): Promise<void> {
       nav,
       current_slug: 'features',
       sections: layout.page_features,
-      subpage_hero: pages.features.hero,
+      subpage_hero: content.pages.features.hero,
       google_fonts_href: fontsHref,
     }),
     'utf8',
@@ -145,7 +154,7 @@ async function buildOne(p: (typeof pairings)[number]): Promise<void> {
       nav,
       current_slug: 'how-it-works',
       sections: layout.page_how_it_works,
-      subpage_hero: pages.how_it_works.hero,
+      subpage_hero: content.pages.how_it_works.hero,
       google_fonts_href: fontsHref,
     }),
     'utf8',
@@ -161,7 +170,7 @@ async function buildOne(p: (typeof pairings)[number]): Promise<void> {
       nav,
       current_slug: 'faq',
       sections: layout.page_faq,
-      subpage_hero: pages.faq.hero,
+      subpage_hero: content.pages.faq.hero,
       google_fonts_href: fontsHref,
     }),
     'utf8',
@@ -177,7 +186,7 @@ async function buildOne(p: (typeof pairings)[number]): Promise<void> {
       nav,
       current_slug: 'about',
       sections: layout.page_about,
-      subpage_hero: pages.about.hero,
+      subpage_hero: content.pages.about.hero,
       google_fonts_href: fontsHref,
     }),
     'utf8',
@@ -193,7 +202,7 @@ async function buildOne(p: (typeof pairings)[number]): Promise<void> {
       nav,
       current_slug: 'contact',
       sections: layout.page_contact,
-      subpage_hero: pages.contact.hero,
+      subpage_hero: content.pages.contact.hero,
       google_fonts_href: fontsHref,
     }),
     'utf8',
@@ -209,14 +218,14 @@ async function buildOne(p: (typeof pairings)[number]): Promise<void> {
       nav,
       current_slug: 'blog',
       sections: layout.blog_index,
-      subpage_hero: blog.index.hero,
+      subpage_hero: content.blog.index.hero,
       google_fonts_href: fontsHref,
     }),
     'utf8',
   );
 
   // /blog/{slug}.html
-  for (const art of blog.articles) {
+  for (const art of content.blog.articles) {
     writeFileSync(
       join(outDir, 'blog', `${art.slug}.html`),
       renderPage({

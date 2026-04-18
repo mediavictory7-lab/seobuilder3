@@ -69,11 +69,11 @@ const layout2: Layout = {
   blog_article: ['header:v2', 'blog-article:body', 'cta:v1', 'footer:v2'],
 };
 
-// Site 3 — Bron Valnex · friend · coral-compact. Casual, punchy, 12 sections.
+// Site 3 — Bron Valnex · friend · coral-compact. Casual, punchy, 12 sections. Uses ORB hero.
 const layout3: Layout = {
   home: [
     'header:v1',
-    'hero:v1',
+    'hero:v2',
     'stats:v1',
     'smarter-trading:v1',
     'how-it-works:v1',
@@ -120,11 +120,11 @@ const layout4: Layout = {
   blog_article: ['header:v2', 'blog-article:body', 'cta:v1', 'footer:v2'],
 };
 
-// Site 5 — Swap Lidex Sys · performer · stage-amber. Rhythmic, theatrical, 13 sections.
+// Site 5 — Swap Lidex Sys · performer · stage-amber. Rhythmic, theatrical, 13 sections. Uses FORM hero.
 const layout5: Layout = {
   home: [
     'header:v1',
-    'hero:v2',
+    'hero:v1',
     'stats:v1',
     'smarter-trading:v2',
     'tools:v1',

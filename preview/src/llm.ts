@@ -43,7 +43,24 @@ Produce ONE JSON object with the following structure:
     "company_registration": string (e.g. "Reg. No. HE 123456")
   },
   "home": {
-    "hero":           { "eyebrow": "...", "title": "...", "subtitle": "...", "cta_label": "..." },
+    "hero": {
+      "eyebrow": "short tag, <=30 chars, e.g. 'AI TRADING' or 'INSTITUTIONAL'",
+      "title": "... H1 headline, 5-9 words, punchy, not generic ...",
+      "accent_phrase": "1-3 consecutive words from title that will be highlighted in accent color — must appear verbatim in title",
+      "subtitle": "... 1-2 sentences that explain the value clearly, 12-25 words ...",
+      "cta_label": "e.g. 'Start Trading' — 2-3 words",
+      "form_title": "e.g. 'Register now' — 2-4 words",
+      "form_subtitle": "e.g. 'Start your AI trading experience in less than 30 seconds' — 8-14 words",
+      "form_submit_label": "e.g. 'Create a free account' — 3-5 words",
+      "risk_note": "1 short sentence: 'Any action related to cryptocurrencies carries risk. There is no guarantee of profit.' or similar",
+      "rating_score": "plausible real number like '4.7' or '4.8'",
+      "rating_count": "plausible number '1,240' to '8,500' (no round marketing numbers)",
+      "rating_label": "e.g. 'stars by over 5,216 users' — must be consistent with rating_count"
+    },
+    "trust_media": {
+      "eyebrow": "AS SEEN IN",
+      "outlets": ["Fintech Weekly", "Block Digest", "Market Pulse", "Crypto Insider", "Ledger Times"]    // 5 plausible publication names in the trading/crypto/finance space. Do not use real brand names.
+    },
     "value_prop":     { "title": "...", "lead": "... short positioning sentence ...", "paragraphs": [p1, p2, p3, p4] },   // 4 paragraphs, each 3-5 sentences
     "stats":          { "items": [ {number,label,detail}, {number,label,detail}, {number,label,detail} ] },
     "smarter_trading":{ "title": "...", "subtitle": "...", "items": [ {title,text} x 6 ] },          // text: 2-3 sentences each

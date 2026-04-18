@@ -18,9 +18,21 @@ export interface SiteIdentity {
 export interface HomeContent {
   hero: {
     eyebrow: string;
-    title: string;
+    title: string;            // May include a "||accent|| X ||/accent||" delimiter for colored word
     subtitle: string;
     cta_label: string;
+    accent_phrase: string;    // 1-3 words to highlight inside title in accent color
+    form_title: string;       // e.g. "Register now"
+    form_subtitle: string;    // e.g. "Start your AI trading experience in less than 30 seconds"
+    form_submit_label: string;
+    risk_note: string;        // small print, 1-2 sentences
+    rating_score: string;     // e.g. "4.8"
+    rating_count: string;     // e.g. "5,216"
+    rating_label: string;     // e.g. "stars by over 5,216 users"
+  };
+  trust_media: {
+    eyebrow: string;           // e.g. "AS SEEN IN"
+    outlets: string[];         // 4-5 publication names
   };
   value_prop: {
     title: string;
